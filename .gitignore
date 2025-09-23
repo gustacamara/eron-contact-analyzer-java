@@ -2,6 +2,7 @@
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+src/data/maildir
 
 ### Eclipse ###
 .apt_generated
@@ -14,7 +15,6 @@ out/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-!**/src/data/maildir
 
 ### NetBeans ###
 /nbproject/private/
