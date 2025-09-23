@@ -1,17 +1,32 @@
 package app;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+import model.DatasetReader;
+import model.RawDataNode;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.io.FileWriter;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        DatasetReader mydata = new DatasetReader();
+        ArrayList<Path> sentMailDir = mydata.scanDir("./src/data/maildir");
+        ArrayList<RawDataNode> nodes = new ArrayList<>();
+        for(Path sentMailPath: sentMailDir) {
+            mydata.getFromAndToFromFolder(sentMailPath, nodes);
+        }
+        writeNodesToCSV(nodes, "./src/data/data.csv");
+
+    }
+    public static void writeNodesToCSV(ArrayList<RawDataNode> nodes, String filename) {
+        try (FileWriter writer = new FileWriter(filename)) {
+            for (RawDataNode node : nodes) {
+                writer.write(node.toString() + "\n");
+            }
+            System.out.println("Arquivo CSV criado com sucesso: " + filename);
+        } catch (IOException e) {
+            System.err.println("Erro ao escrever arquivo CSV: " + e.getMessage());
         }
     }
 }
