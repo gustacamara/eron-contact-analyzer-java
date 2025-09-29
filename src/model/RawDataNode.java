@@ -3,9 +3,9 @@ import java.util.ArrayList;
 
 public class RawDataNode {
     private String from;
-    private ArrayList<String> to;
+    private String to;
 
-    public RawDataNode(String from, ArrayList<String> to) {
+    public RawDataNode(String from, String to) {
         this.from = from;
         this.to = to;
     }
@@ -14,12 +14,8 @@ public class RawDataNode {
         return from;
     }
 
-    public ArrayList<String> getTo() {
-        return to;
-    }
-
     @Override
     public String toString() {
-        return from + " -> " + (to == null || to.isEmpty() ? "[]" : "[" + String.join(",", to) + "]");
+        return from + ", " + to;
     }
 }
