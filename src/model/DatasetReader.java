@@ -19,9 +19,7 @@ public class DatasetReader {
         try (Stream<Path> paths = Files.walk(rootPath)) {
             paths.filter(Files::isDirectory)
                     .filter(path -> path.getFileName().toString().contains("_sent_mail"))
-                    .forEach(sentMailDir -> {
-                        fileNames.add(sentMailDir);
-                    });
+                    .forEach(fileNames::add);
         }
         return fileNames;
     }
@@ -30,43 +28,9 @@ public class DatasetReader {
         try (Stream<Path> files = Files.walk(sentMailDir)) {
             files.filter(Files::isRegularFile).forEach(file -> {
                 try (BufferedReader reader = Files.newBufferedReader(file)) {
-                    String from = null;
-                    StringBuilder toBuilder = new StringBuilder();
-                    String line;
-                    boolean isReadingTo = false;
-
-                    while ((line = reader.readLine()) != null) {
-                        String trimmedLine = line.trim();
-                        if (trimmedLine.startsWith("From:")) {
-                            from = trimmedLine.substring(5).trim();
-                        }
-                        else if (trimmedLine.startsWith("To:")) {
-                            toBuilder.append(trimmedLine.substring(3).trim());
-                            isReadingTo = true;
-                        }
-                        else if (trimmedLine.startsWith("Subject:")) {
-                            break;
-                        }
-                        else if (isReadingTo && !trimmedLine.isEmpty()) {
-                            toBuilder.append(" ").append(trimmedLine);
-                        }
-                    }
-                    if (from != null && toBuilder.length() > 0) {
-                        String toStr = toBuilder.toString()
-                                .replace(" ", "");
-
-                        String[] toArray = toStr.split(",");
-                        ArrayList<String> toList = new ArrayList<>();
-                        for (String email : toArray) {
-                            String cleanEmail = email.trim();
-                            if (!cleanEmail.isEmpty()) {
-                                toList.add(cleanEmail);
-                            }
-                        }
-                        if (!toList.isEmpty()) {
-                            nodes.add(new RawDataNode(from, toList));
-                        }
-                    }
+                    StringBuilder builder = new StringBuilder();
+                    String filteredFile = filterFile(reader, builder);
+                    reduceFile(nodes, filteredFile, builder);
                 } catch (IOException e) {
                     System.err.println("Erro ao ler arquivo " + file + ": " + e.getMessage());
                 }
@@ -74,6 +38,50 @@ public class DatasetReader {
         } catch (IOException e) {
             System.err.println("Erro ao listar arquivos do diretório " + sentMailDir + ": " + e.getMessage());
         }
+    }
+
+    private static void reduceFile(ArrayList<RawDataNode> nodes, String filteredFile, StringBuilder builder) {
+        if (filteredFile != null && !builder.isEmpty()) {
+            String toStr = builder.toString()
+                    .replace(" ", "");
+            String[] toArray = toStr.split(",");
+            ArrayList<String> toList = new ArrayList<>();
+
+            for (String email : toArray) {
+                String cleanEmail = email.trim();
+                if (!cleanEmail.isEmpty()) {
+                    toList.add(cleanEmail);
+                }
+            }
+            if (!toList.isEmpty()) {
+                for (String toEmail: toList) {
+                    nodes.add(new RawDataNode(filteredFile, toEmail));
+                }
+            }
+        }
+    }
+
+    private static String filterFile(BufferedReader reader, StringBuilder toBuilder) throws IOException {
+        boolean isReadingTo = false;
+        String from = null;
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String trimmedLine = line.trim();
+            if (trimmedLine.startsWith("From:")) {
+                from = trimmedLine.substring(5).trim();
+            }
+            else if (trimmedLine.startsWith("To:")) {
+                toBuilder.append(trimmedLine.substring(3).trim());
+                isReadingTo = true;
+            }
+            else if (trimmedLine.startsWith("Subject:")) {
+                break;
+            }
+            else if (isReadingTo && !trimmedLine.isEmpty()) {
+                toBuilder.append(" ").append(trimmedLine);
+            }
+        }
+        return from;
     }
 
 
