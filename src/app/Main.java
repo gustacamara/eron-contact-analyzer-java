@@ -3,20 +3,26 @@ package app;
 import model.DatasetReader;
 import model.RawDataNode;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.io.FileWriter;
 
 public class Main {
+    public static final String DATASET = "./src/data/maildir";
+    public static final File FILTEREDDATASET = new File("./src/data/maildir");
     public static void main(String[] args) throws IOException {
-        DatasetReader mydata = new DatasetReader();
-        ArrayList<Path> sentMailDir = mydata.scanDir("./src/data/maildir");
-        ArrayList<RawDataNode> nodes = new ArrayList<>();
-        for(Path sentMailPath: sentMailDir) {
-            mydata.getFromAndToFromFolder(sentMailPath, nodes);
+        if (!FILTEREDDATASET.exists()) {
+            DatasetReader mydata = new DatasetReader();
+            ArrayList<Path> sentMailDir = mydata.scanDir(DATASET);
+            ArrayList<RawDataNode> nodes = new ArrayList<>();
+            for(Path sentMailPath: sentMailDir) {
+                mydata.getFromAndToFromFolder(sentMailPath, nodes);
+            }
+            writeNodesToCSV(nodes, "./src/data/data.csv");
         }
-        writeNodesToCSV(nodes, "./src/data/data.csv");
+        System.out.println("Já existe");
 
     }
     public static void writeNodesToCSV(ArrayList<RawDataNode> nodes, String filename) {
