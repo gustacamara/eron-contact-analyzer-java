@@ -1,4 +1,6 @@
-package model;
+package infraestructure;
+
+import model.RawDataNode;
 
 import java.io.BufferedReader;
 import java.io.IOException;
