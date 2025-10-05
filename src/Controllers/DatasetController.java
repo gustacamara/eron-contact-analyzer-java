@@ -1,12 +1,13 @@
 package Controllers;
 
 import model.RawDataNode;
+import model.DatasetReader;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DatasetController {
     private String DATASET_DIR;
@@ -22,9 +23,8 @@ public class DatasetController {
 
     public void runRoutine() throws IOException {
         try{
-            File csv = new File(FILTERED_DATASET_NAME);
-            if (!csv.exists()) {
-                infraestructure.DatasetReader mydata = new infraestructure.DatasetReader();
+            if (!hasDataProcessed()) {
+                DatasetReader mydata = new DatasetReader();
                 ArrayList<Path> sentMailDir = mydata.scanDir(DATASET_DIR);
                 ArrayList<RawDataNode> nodes = new ArrayList<>();
                 for(Path sentMailPath: sentMailDir) {
@@ -49,5 +49,35 @@ public class DatasetController {
         } catch (IOException e) {
             System.err.println("Erro ao escrever arquivo CSV: " + e.getMessage());
         }
+    }
+
+    public Map<String, Map<String, Integer>> getAdjacencyRelationShipp() throws IOException {
+        Map<String, Map<String, Integer>> adj = new HashMap<>();
+        if(hasDataProcessed()) {
+            String[] fields;
+            String line, k, v;
+            try (BufferedReader reader = new BufferedReader(new FileReader(FILTERED_DATASET_NAME))) {
+                while((line = reader.readLine()) != null) {
+                    line = line.trim();
+                    if (line.isEmpty()) {
+                        continue;
+                    }
+                    fields = line.split(", ");
+                    k = fields[0].trim();
+                    v = fields[1].trim();
+                    incrementHash(adj, k, v);
+                }
+            }
+        }
+        return  adj;
+    }
+
+    public void incrementHash( Map<String, Map<String, Integer>> map, String from, String to) {
+        map.putIfAbsent(from, new HashMap<>());
+        map.get(from).merge(to, 1, Integer::sum);
+    }
+
+    public boolean hasDataProcessed() {
+        return new File(FILTERED_DATASET_NAME).exists();
     }
 }
