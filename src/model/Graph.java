@@ -19,6 +19,7 @@ public class Graph {
         this.label = labels;
         this.max = max;
     }
+
     public Graph( String[] labels ) {
         this.matrix = new Vertex[labels.length];
         this.label = labels;
@@ -39,6 +40,31 @@ public class Graph {
         } else {
             vertex.setWeight(vertex.getWeight() + 1);
         }
+    }
+
+    public void createAdjacency(int from, int to, int weight) {
+        if (matrix[from] == null) {
+            matrix[from] = new Vertex(to, weight);
+            return;
+        }
+        Vertex vertex = matrix[from];
+        while (vertex.getNext()!= null && vertex.getId() != to ) {
+            vertex = vertex.getNext();
+        }
+        if (vertex.getId() != to) {
+            vertex.setNext(new Vertex(to, weight));
+        } else {
+            vertex.setWeight(weight);
+        }
+    }
+
+    public int getIndex(String email) {
+        for(int i = 0; i < max; i ++) {
+            if (email.equals(label[i])) {
+               return   i;
+            }
+        }
+        return 0;
     }
 
     public void removeAdjacency(int from, int to) {
