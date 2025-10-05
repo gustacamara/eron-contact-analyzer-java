@@ -1,4 +1,4 @@
-package infraestructure;
+package model;
 
 import model.RawDataNode;
 
@@ -31,8 +31,8 @@ public class DatasetReader {
             files.filter(Files::isRegularFile).forEach(file -> {
                 try (BufferedReader reader = Files.newBufferedReader(file)) {
                     StringBuilder builder = new StringBuilder();
-                    String filteredFile = filterFile(reader, builder);
-                    reduceFile(nodes, filteredFile, builder);
+                    String filteredLine = filterLine(reader, builder);
+                    reduceFile(nodes, filteredLine, builder);
                 } catch (IOException e) {
                     System.err.println("Erro ao ler arquivo " + file + ": " + e.getMessage());
                 }
@@ -42,8 +42,8 @@ public class DatasetReader {
         }
     }
 
-    private static void reduceFile(ArrayList<RawDataNode> nodes, String filteredFile, StringBuilder builder) {
-        if (filteredFile != null && !builder.isEmpty()) {
+    private static void reduceFile(ArrayList<RawDataNode> nodes, String filteredLine, StringBuilder builder) {
+        if (filteredLine != null && !builder.isEmpty()) {
             String toStr = builder.toString()
                     .replace(" ", "");
             String[] toArray = toStr.split(",");
@@ -57,13 +57,13 @@ public class DatasetReader {
             }
             if (!toList.isEmpty()) {
                 for (String toEmail: toList) {
-                    nodes.add(new RawDataNode(filteredFile, toEmail));
+                    nodes.add(new RawDataNode(filteredLine, toEmail));
                 }
             }
         }
     }
 
-    private static String filterFile(BufferedReader reader, StringBuilder toBuilder) throws IOException {
+    private static String filterLine(BufferedReader reader, StringBuilder toBuilder) throws IOException {
         boolean isReadingTo = false;
         String from = null;
         String line;
