@@ -174,6 +174,22 @@ public class Graph {
         System.out.print("\n");
     }
 
+    public int getMax() {
+        return max;
+    }
+
+    public int getAdjacencyCount() {
+        int adj = 0;
+
+        for (int i = 0; i < max; i++) {
+            Vertex v = matrix[i];
+            while (v != null) {
+                adj++;
+                v = v.getNext();
+            }
+        }
+        return adj;
+    }
 
     public String getLabelById(int id) {
         return label[id];
