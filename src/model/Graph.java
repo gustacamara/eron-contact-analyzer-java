@@ -126,6 +126,18 @@ public class Graph {
         }
     }
 
+    public void topInputGrade() {
+        ArrayList<FrequencyNode> node = new ArrayList<>();
+        for (int i = 0; i < max; i++) {
+            node.add(new FrequencyNode( this.getLabelById(i), inputVertexGrade(i, new ArrayList<>())));
+        }
+        node.sort(Comparator.comparingInt(FrequencyNode::getFrequency).reversed());
+        System.out.println("\nTop 20(grau de entrada): ");
+        for (int i = 0; i < 20; i++) {
+            System.out.println(node.get(i).getEmail() + ": " + node.get(i).getFrequency());
+        }
+    }
+
     public int inputVertexGrade(int id, ArrayList<Integer> adjacency) {
         int grade = 0;
         for (int i = 0; i < max; i++) {
