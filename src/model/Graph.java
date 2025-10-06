@@ -26,22 +26,6 @@ public class Graph {
         this.max = labels.length;
     }
 
-    public void createAdjacency(int from, int to) {
-        if (matrix[from] == null) {
-            matrix[from] = new Vertex(to, 1);
-            return;
-        }
-        Vertex vertex = matrix[from];
-        while (vertex.getNext()!= null && vertex.getId() != to ) {
-            vertex = vertex.getNext();
-        }
-        if (vertex.getId() != to) {
-            vertex.setNext(new Vertex(to, 1));
-        } else {
-            vertex.setWeight(vertex.getWeight() + 1);
-        }
-    }
-
     public void createAdjacency(int from, int to, int weight) {
         if (matrix[from] == null) {
             matrix[from] = new Vertex(to, weight);
@@ -65,27 +49,6 @@ public class Graph {
             }
         }
         return 0;
-    }
-
-    public void removeAdjacency(int from, int to) {
-        Vertex previous = matrix[from];
-        if (previous == null) {
-            return;
-        }
-        if (previous.getId() == to) {
-            matrix[from] = previous.getNext();
-            return;
-        }
-
-        Vertex current = previous.getNext();
-        while (current != null) {
-            if (current.getId() == to) {
-                previous.setNext(current.getNext());
-                return;
-            }
-            previous = current;
-            current = current.getNext();
-        }
     }
 
     public double dijkstra(int from, int to) {
@@ -138,11 +101,7 @@ public class Graph {
         System.out.print("\n");
     }
 
-    public void setArrowInformation(int index, String name) {
-        label[index] = name;
-    }
-
-    public int vertexGrade(int id, ArrayList<Integer> adjacency) {
+    public int outputVertexGrade(int id, ArrayList<Integer> adjacency) {
         int grade = 0;
         Vertex vertex = matrix[id];
         while (vertex != null) {
@@ -150,6 +109,22 @@ public class Graph {
             grade ++;
             vertex = vertex.getNext();
         }
+        return grade;
+    }
+
+    public int inputVertexGrade(int id, ArrayList<Integer> adjacency) {
+        int grade = 0;
+        for (int i = 0; i < max; i++) {
+            Vertex vertex = matrix[i];
+            while (vertex != null) {
+                if(vertex.getId() == id) {
+                    adjacency.add(i);
+                    grade++;
+                }
+                vertex = vertex.getNext();
+            }
+        }
+
         return grade;
     }
 
@@ -200,4 +175,7 @@ public class Graph {
     }
 
 
+    public String getLabelById(int id) {
+        return label[id];
+    }
 }
