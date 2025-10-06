@@ -1,5 +1,7 @@
 package model;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Graph {
     public final int POSITIVE_INFINITY = (int) Double.POSITIVE_INFINITY;
@@ -110,6 +112,18 @@ public class Graph {
             vertex = vertex.getNext();
         }
         return grade;
+    }
+
+    public void topOutputGrade() {
+        ArrayList<FrequencyNode> node = new ArrayList<>();
+        for (int i = 0; i < max; i++) {
+            node.add(new FrequencyNode( this.getLabelById(i), outputVertexGrade(i, new ArrayList<>())));
+        }
+        node.sort(Comparator.comparingInt(FrequencyNode::getFrequency).reversed());
+        System.out.println("\nTop 20(grau de saida): ");
+        for (int i = 0; i < 20; i++) {
+            System.out.println(node.get(i).getEmail() + ": " + node.get(i).getFrequency());
+        }
     }
 
     public int inputVertexGrade(int id, ArrayList<Integer> adjacency) {
