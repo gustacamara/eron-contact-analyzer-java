@@ -61,7 +61,7 @@ public class Graph {
     public int getIndex(String email) {
         for(int i = 0; i < max; i ++) {
             if (email.equals(label[i])) {
-               return   i;
+               return i;
             }
         }
         return 0;
