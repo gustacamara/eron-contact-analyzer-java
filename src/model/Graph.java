@@ -1,6 +1,4 @@
 package model;
-import java.lang.reflect.Array;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -161,7 +159,7 @@ public class Graph {
         visited.add(from);
         Vertex v;
         int current = from;
-        while (current != to){
+        while (current != to && visited.size() < max){
             v = matrix[current];
             while (v != null) {
                 if(!ids.contains(v.getId()) && !visited.contains(v.getId())){
@@ -172,8 +170,43 @@ public class Graph {
             visited.add(ids.removeFirst());
             current = visited.getLast();
         }
+        if (visited.size() == max - 1 || current != to) {
+            return null;
+        }
         return visited;
     }
+
+    public ArrayList<Integer> deepFirsSearch(int from, int to) {
+        ArrayList<Integer> path = new ArrayList<>();
+        ArrayList<Integer> stack = new ArrayList<>();
+        boolean[] visited = new boolean[max];
+        stack.add(from);
+
+        while (!stack.isEmpty()) {
+            int current = stack.removeLast();
+            if (visited[current]) {
+                continue;
+            }
+
+            visited[current] = true;
+            path.add(current);
+            if (current == to) {
+                return path;
+            }
+
+            Vertex v = matrix[current];
+            while (v != null) {
+                int neighborId = v.getId();
+                if (!visited[neighborId]) {
+                    stack.add(neighborId);
+                }
+                v = v.getNext();
+            }
+        }
+
+        return null;
+    }
+
 
     public void warshall() {
         boolean[][] warsh = new boolean[max][max];
