@@ -207,51 +207,40 @@ public class Graph {
         return null;
     }
 
-
-    public void warshall() {
-        boolean[][] warsh = new boolean[max][max];
-        Vertex vertex;
-        for (int i = 0; i < max; i++) {
-            vertex = matrix[i];
-            while (vertex != null) {
-                warsh[i][vertex.getId()] = true;
-                vertex = vertex.getNext();
-            }
+    public ArrayList<Integer> reach(int from, int distance) {
+        if (distance == 0) {
+            ArrayList<Integer> result = new ArrayList<>();
+            result.add(from);
+            return result;
         }
+        ArrayList<Integer> currentLevel = new ArrayList<>();
+        ArrayList<Integer> nextLevel = new ArrayList<>();
+        boolean[] visited = new boolean[max];
+        currentLevel.add(from);
+        visited[from] = true;
+        for (int d = 0; d < distance; d++) {
+            nextLevel.clear();
+            for (int current : currentLevel) {
+                Vertex v = matrix[current];
 
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        for (int k = 0; k < max; k++) {
-            for (int i = 0; i < max; i++) {
-                if (warsh[i][k]) {
-                    for (int j = 0; j < max; j++) {
-                        warsh[i][j] = warsh[i][j] || warsh[k][j];
+                while (v != null) {
+                    int neighborId = v.getId();
+                    if (!visited[neighborId]) {
+                        visited[neighborId] = true;
+                        nextLevel.add(neighborId);
                     }
+                    v = v.getNext();
                 }
             }
-        }
-        printMatrix(warsh);
-    }
 
-    public void printMatrix( boolean[][] matrixB){
-        System.out.print(" ");
-        for(String i: label){
-            System.out.printf("%50s", i);
-        }
-        System.out.print("\n");
-        for(int i = 0; i < max; i++) {
-            System.out.print(label[i]);
-            for(boolean j: matrixB[i]){
-                if (j) {
-                    System.out.printf("%5s", 1);
-                }else{
-                    System.out.printf("%5s", 0);
-                }
+            currentLevel = new ArrayList<>(nextLevel);
+
+            if (currentLevel.isEmpty()) {
+                break;
             }
-            System.out.print("\n");
         }
-        System.out.print("\n");
+
+        return currentLevel;
     }
 
     public int getMax() {
