@@ -1,4 +1,5 @@
 package model;
+import java.lang.reflect.Array;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -152,6 +153,26 @@ public class Graph {
         }
 
         return grade;
+    }
+
+    public ArrayList<Integer> breadthFirstSearch(int from, int to) {
+        ArrayList<Integer> visited = new ArrayList<>();
+        ArrayList<Integer> ids = new ArrayList<>();
+        visited.add(from);
+        Vertex v;
+        int current = from;
+        while (current != to){
+            v = matrix[current];
+            while (v != null) {
+                if(!ids.contains(v.getId()) && !visited.contains(v.getId())){
+                    ids.add(v.getId());
+                }
+                v = v.getNext();
+            }
+            visited.add(ids.removeFirst());
+            current = visited.getLast();
+        }
+        return visited;
     }
 
     public void warshall() {
