@@ -1,74 +1,109 @@
 # Enron Contact Analyzer
 
-Um analisador de contatos desenvolvido para extrair informações da base de e-mails **Enron Email Dataset**. Este projeto aplica conceitos práticos de teoria dos grafos para analisar redes de comunicação e extrair insights úteis sobre padrões de comunicação.
+Um analisador de redes de comunicação desenvolvido para extrair insights da base de e-mails **Enron Email Dataset**. Este projeto implementa conceitos avançados de teoria dos grafos para analisar padrões de comunicação organizacional.
 
 ## Sobre o Projeto
 
-O **Enron Contact Analyzer** é uma ferramenta que processa a famosa base pública de e-mails da Enron (disponível em https://www.cs.cmu.edu/~./enron/) e constrói um grafo direcionado e ponderado para análise de comunicações entre funcionários.
+O **Enron Contact Analyzer** é uma ferramenta completa que processa a famosa base pública de e-mails da Enron e constrói um grafo direcionado e ponderado para análise detalhada de redes de comunicação entre funcionários.
 
-O grafo gerado considera:
-- **Vértices**: Endereços de e-mail dos usuários
+### Características do Grafo
+- **Vértices**: Endereços de e-mail dos usuários (~150 usuários únicos)
 - **Arestas direcionadas**: Relação de comunicação (remetente → destinatário)
 - **Pesos**: Frequência de comunicação entre dois usuários
-- **Rótulos**: Endereços de e-mail como identificadores
 
-## Funcionalidades
+## Funcionalidades Implementadas
 
-### Implementadas
+### Processamento de Dados
+- **Scanner de Dataset**: Leitura automática dos diretórios de e-mail da Enron
+- **Parser de Headers**: Extração de remetentes e destinatários dos e-mails
+- **Geração de CSV**: Exportação dos dados processados para análise
+- **Cache Inteligente**: Evita reprocessamento desnecessário dos dados
 
-#### Processamento de Dados
-- **Leitura do Dataset**: Scanner automático dos diretórios de e-mail
-- **Extração de Remetentes e Destinatários**: Parsing dos headers dos e-mails
-- **Estrutura de Dados**: Classes para representação dos nós de dados brutos
-- **Exportação CSV**: Geração de arquivo CSV com os dados processados
+### Estrutura do Grafo
+- **Grafo Direcionado Ponderado**: Implementação com lista de adjacências
+- **Criação de Adjacências**: Suporte a pesos customizados
+- **Indexação por E-mail**: Mapeamento eficiente de e-mails para índices
+- **Visualização**: Impressão da matriz de adjacências
 
-### Em Desenvolvimento
-
-#### Construção do Grafo
-- **Criação do Grafo Direcionado**: Implementação da estrutura de grafo ponderado a partir dos dados de e-mail
-
-#### Análises Estatísticas
+### Análises Estatísticas
 - **Contagem de Vértices**: Número total de usuários na rede
 - **Contagem de Arestas**: Número total de conexões de comunicação
-- **Top 20 Grau de Saída**: Usuários que mais enviam e-mails
-- **Top 20 Grau de Entrada**: Usuários que mais recebem e-mails
+- **Grau de Saída**: Análise de usuários que mais enviam e-mails
+- **Grau de Entrada**: Análise de usuários que mais recebem e-mails
+- **Top Rankings**: Mostra os 20 usuários que mais enviaram e receberam emails
 
-#### Algoritmos de Busca
-- **Busca em Profundidade (DFS)**: Verificação de conectividade entre usuários com retorno do caminho
-- **Busca em Largura (BFS)**: Verificação de conectividade entre usuários com retorno do caminho
-- **Tratamento de Ciclos**: Prevenção de loops infinitos nos algoritmos
+### Algoritmos de Busca
+- **Busca em Largura (BFS)**: Encontra caminho mais curto entre usuários
+- **Busca em Profundidade (DFS)**: Verifica conectividade com retorno do caminho
+- **Alcance por Distância**: Encontra todos os nós a uma distância específica
+- **Prevenção de Ciclos**: Tratamento inteligente de loops
 
-#### Análises Avançadas
-- **Distância por Arestas**: Encontrar todos os nós a uma distância D de um nó N
-- **Caminho Crítico de Fluxo**: Implementação do algoritmo Dijkstra adaptado para encontrar o caminho de maior custo acumulado (maior dependência)
+### Análises Avançadas
+- **Algoritmo de Dijkstra Adaptado**: Caminho de maior dependência (custo acumulado)
+- **Análise de Centralidade**: Identificação de usuários centrais na rede
 
-## Tecnologias Utilizadas
+## Arquitetura do Sistema
 
-- **Java**: Linguagem principal de desenvolvimento
-- **Java NIO**: Para manipulação eficiente de arquivos
-- **Collections Framework**: Para estruturas de dados
+### Camadas da Aplicação
+```
+src/
+├── app/
+│   └── Main.java                 # Ponto de entrada da aplicação
+├── Controllers/
+│   ├── DatasetController.java    # Processamento do dataset
+│   └── GraphController.java      # Operações do grafo
+├── model/
+│   ├── Graph.java               # Implementação do grafo
+│   ├── Vertex.java              # Estrutura de vértices
+│   ├── DatasetReader.java       # Leitor de e-mails
+│   ├── RawDataNode.java         # Nó de dados brutos
+│   └── FrequencyNode.java       # Nó de frequência
+└── data/
+  ├── maildir/                 # Dataset Enron (diretórios de e-mail)
+  └── processed/               # Arquivos CSV processados
+```
 
-## Dados de Entrada
+### Fluxo de Execução
+1. **Processamento**: `DatasetController` processa e-mails → CSV
+2. **Construção**: Criação do grafo a partir dos dados processados
+3. **Análise**: Execução de algoritmos e geração de estatísticas
+4. **Saída**: Relatórios e visualizações dos resultados
 
-O projeto utiliza o **Enron Email Dataset**, que contém:
-- Mais de 500.000 mensagens de e-mail
-- E-mails de aproximadamente 150 usuários
-- Estrutura hierárquica de pastas por usuário
-- Subpastas organizadas por tipo (sent_mail, inbox, etc.)
+## Dataset
 
-## Próximos Passos
+**Enron Email Dataset** utilizado:
+- **Volume**: 500,000+ mensagens de e-mail
+- **Usuários**: ~150 funcionários da Enron
+- **Período**: Comunicações corporativas históricas
+- **Estrutura**: Hierarquia de pastas por usuário/tipo
 
-1. **Implementação do Grafo**: Criar estrutura de grafo direcionado ponderado
-2. **Métricas Básicas**: Implementar contadores de vértices e arestas
-3. **Rankings**: Desenvolver análises de grau de entrada e saída
-4. **Algoritmos de Busca**: Implementar DFS e BFS com detecção de caminhos
-5. **Análises de Distância**: Implementar busca por distância específica
-6. **Algoritmo de Caminho Crítico**: Adaptar Dijkstra para maior custo acumulado
+## Como Executar
+
+```bash
+# Compilar o projeto
+javac -d out src/app/*.java src/Controllers/*.java src/model/*.java
+
+# Executar a análise
+java -cp out app.Main
+```
+
+## Saída Esperada
+
+O sistema gera:
+- Lista de adjacências do grafo
+- Estatísticas de grau de entrada/saída
+- Rankings dos top 20 usuários mais ativos
+- Número total de vértices e arestas
+- Resultados de buscas BFS/DFS entre usuários específicos
 
 ## Contribuições
 
-Este é um projeto acadêmico focado no aprendizado prático de teoria dos grafos e análise de redes sociais.
+Este projeto demonstra aplicação prática de:
+- Teoria dos Grafos em problemas reais
+- Análise de Redes Sociais
+- Algoritmos de Busca e Caminho
+- Processamento de Big Data em Java
 
 ---
 
-*Desenvolvido como parte do estudo de estruturas de dados e algoritmos aplicados a redes sociais.*
+*Desenvolvido como projeto acadêmico de estruturas de dados e algoritmos aplicados à análise de redes organizacionais.*
