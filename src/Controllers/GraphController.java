@@ -7,31 +7,32 @@ import java.util.Map;
 
 public class GraphController {
     public void runGraph(Graph g) {
-
-        g.createAdjacency(0, 3);
-        g.createAdjacency(0, 3);
-        g.createAdjacency(0, 1);
-        g.createAdjacency(1, 4);
-//        g.createAdjacency(1, 2); // makes 1 get everyone because 2 go to all nodes
-        g.createAdjacency(2, 0);
-        g.createAdjacency(2, 1);
-        g.createAdjacency(2, 3);
-        g.createAdjacency(2, 3);
-        g.createAdjacency(2, 3);
-        g.createAdjacency(2, 4);
-        g.createAdjacency(2, 5);
-        g.createAdjacency(3, 4);
-        g.createAdjacency(4, 5);
-        g.createAdjacency(5, 1);
-        ArrayList<Integer> listOfAdjacency =  new ArrayList<>();
-//        g.printAdjacency();
-        System.out.println(g.vertexGrade(2, listOfAdjacency));
-        System.out.println(listOfAdjacency);
-        System.out.println();
-
+        System.out.println("Lista de adjacencias: \n");
         g.printAdjacency();
-//        g.warshall();
-//        System.out.println(g.dijkstra(0,5) + ": custo do caminho!");
+
+        System.out.print("Grau de Saida: ");
+        ArrayList<Integer> listOfOutputAdjacency =  new ArrayList<>();
+        System.out.print(g.getLabelById(87));
+        System.out.println(" : " + g.outputVertexGrade(87, listOfOutputAdjacency));
+        g.topOutputGrade();
+
+        System.out.print("\nGrau de entrada: ");
+        ArrayList<Integer> listOfInputAdjacency =  new ArrayList<>();
+        System.out.print(g.getLabelById(90));
+        System.out.println(" : " + g.inputVertexGrade(90, listOfInputAdjacency));
+        g.topInputGrade();
+
+        int fromId = 88; // 88, 10
+        int toId = 10; // 104, 50
+        System.out.println("\nNumero de vertices: " + g.getMax());
+        System.out.println("Numero de arestas: " + g.getAdjacencyCount());
+        System.out.println("Busca em largura: " + g.breadthFirstSearch(fromId, toId));
+        System.out.println("Busca em profundidade: " + g.deepFirsSearch(fromId, toId));
+        System.out.println("Lista de alcançabilidade("+  g.getLabelById(fromId)+"): " + g.reach(fromId,3));
+        ArrayList<Integer> path = new ArrayList<>();
+        System.out.println("Custo Dijkstra: " + g.dijkstra(fromId, toId, path));
+        System.out.println("Caminho Dijkstra: " + path);
+
     }
 
     public Graph setAdjByHash(Map<String, Map<String, Integer>> map){
