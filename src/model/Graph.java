@@ -3,8 +3,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class Graph {
-    public final int POSITIVE_INFINITY = (int) Double.POSITIVE_INFINITY;
-
     private Vertex[] matrix;
     private String[] label;
     private final int max;
@@ -52,32 +50,34 @@ public class Graph {
         return 0;
     }
 
-    public double dijkstra(int from, int to) {
+    public double dijkstra(int from, int to, ArrayList<Integer> path) {
         boolean[] visited = new boolean[max];
         double[] distance = new double[max];
-        int[] previusVertex = new int[max];
-        for( int i = 0; i < max; i++) {
+        int[] previousVertex = new int[max];
+        final double NEG_INFINITY = Double.NEGATIVE_INFINITY;
+
+        for(int i = 0; i < max; i++) {
             visited[i] = false;
-            distance[i] = POSITIVE_INFINITY;
-            previusVertex[i] = -1;
+            distance[i] = NEG_INFINITY;
+            previousVertex[i] = -1;
         }
-        final int INFINITY = POSITIVE_INFINITY;
         visited[from] = true;
         distance[from] = 0;
         int current = from, k = from;
-        double shorterWay, newWay, currentDistance;
+        double longestWay, newWay, currentDistance;
+
         while(current != to) {
-            shorterWay = INFINITY;
+            longestWay = NEG_INFINITY;
             currentDistance = distance[current];
             for (int i = 0; i < max; i++) {
-                if(!visited[i]){
-                    newWay = currentDistance + matrix[current].getAdjVertexById(i).getWeight();
-                    if (newWay < distance[i]) {
+                if(!visited[i]) {
+                    newWay = currentDistance + (1.0 / matrix[current].getAdjVertexById(i).getWeight());
+                    if (newWay > distance[i]) {
                         distance[i] = newWay;
-                        previusVertex[i] = current;
+                        previousVertex[i] = current;
                     }
-                    if (distance[i] < shorterWay) {
-                        shorterWay = distance[i];
+                    if (distance[i] > longestWay) {
+                        longestWay = distance[i];
                         k = i;
                     }
                 }
@@ -85,6 +85,13 @@ public class Graph {
             current = k;
             visited[current] = true;
         }
+        path.clear();
+        int node = to;
+        while (node != - 1) {
+            path.addFirst(node);
+            node = previousVertex[node];
+        }
+
         return distance[k];
     }
 
