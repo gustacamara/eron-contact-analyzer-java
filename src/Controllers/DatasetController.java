@@ -24,20 +24,25 @@ public class DatasetController {
     public void runRoutine() throws IOException {
         try{
             if (!hasDataProcessed()) {
+                System.out.println("Iniciando processamento do dataset...");
                 DatasetReader mydata = new DatasetReader();
                 ArrayList<Path> sentMailDir = mydata.scanDir(DATASET_DIR);
+                System.out.println("Encontrados " + sentMailDir.size() + " diretórios de e-mail enviado");
+                
                 ArrayList<RawDataNode> nodes = new ArrayList<>();
                 for(Path sentMailPath: sentMailDir) {
                     mydata.getFromAndToFromFolder(sentMailPath, nodes);
                 }
+                System.out.println("Extraídos " + nodes.size() + " registros de e-mail");
+                
                 writeCSV(nodes, String.valueOf(FILTERED_DATASET_NAME));
-                System.out.println("Diretorio criado");
+                System.out.println("Processamento concluído com sucesso!");
+            } else {
+                System.out.println("Dataset já foi processado anteriormente");
             }
-            System.out.println("Já existe");
         } catch (IOException e){
-            System.out.println(e);
+            System.out.println("Erro durante o processamento: " + e);
         }
-
     }
 
     public void writeCSV(ArrayList<RawDataNode> nodes, String filename) {
@@ -53,21 +58,39 @@ public class DatasetController {
 
     public Map<String, Map<String, Integer>> getAdjacencyRelationShipp() throws IOException {
         Map<String, Map<String, Integer>> adj = new HashMap<>();
+        int lineCount = 0;
+        int processedCount = 0;
+        
         if(hasDataProcessed()) {
             String[] fields;
             String line, k, v;
             try (BufferedReader reader = new BufferedReader(new FileReader(FILTERED_DATASET_NAME))) {
                 while((line = reader.readLine()) != null) {
+                    lineCount++;
                     line = line.trim();
                     if (line.isEmpty()) {
                         continue;
                     }
                     fields = line.split(", ");
-                    k = fields[0].trim();
-                    v = fields[1].trim();
-                    incrementHash(adj, k, v);
+                    if (fields.length >= 2) {
+                        k = fields[0].trim();
+                        v = fields[1].trim();
+                        incrementHash(adj, k, v);
+                        processedCount++;
+                    } else {
+                        System.err.println("Linha inválida (não contém vírgula): " + line);
+                    }
                 }
             }
+            System.out.println("Total de linhas lidas: " + lineCount);
+            System.out.println("Total de adjacências processadas: " + processedCount);
+            System.out.println("Total de vértices únicos: " + adj.size());
+            
+            int totalEdges = 0;
+            for (Map<String, Integer> innerMap : adj.values()) {
+                totalEdges += innerMap.size();
+            }
+            System.out.println("Total de arestas únicas: " + totalEdges);
         }
         return  adj;
     }
