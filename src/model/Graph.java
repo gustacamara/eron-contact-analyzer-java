@@ -47,7 +47,7 @@ public class Graph {
                return i;
             }
         }
-        return 0;
+        return -1;
     }
 
     public double dijkstra(int from, int to, ArrayList<Integer> path) {
@@ -55,44 +55,63 @@ public class Graph {
         double[] distance = new double[max];
         int[] previousVertex = new int[max];
         final double NEG_INFINITY = Double.NEGATIVE_INFINITY;
+        ArrayList<Integer> queue = new ArrayList<>();
 
         for(int i = 0; i < max; i++) {
             visited[i] = false;
             distance[i] = NEG_INFINITY;
             previousVertex[i] = -1;
         }
-        visited[from] = true;
+        
         distance[from] = 0;
-        int current = from, k = from;
-        double longestWay, newWay, currentDistance;
+        queue.add(from);
 
-        while(current != to) {
-            longestWay = NEG_INFINITY;
-            currentDistance = distance[current];
-            for (int i = 0; i < max; i++) {
-                if(!visited[i]) {
-                    newWay = currentDistance + (1.0 / matrix[current].getAdjVertexById(i).getWeight());
-                    if (newWay > distance[i]) {
-                        distance[i] = newWay;
-                        previousVertex[i] = current;
-                    }
-                    if (distance[i] > longestWay) {
-                        longestWay = distance[i];
-                        k = i;
-                    }
+        while(!queue.isEmpty()) {
+            int maxIndex = 0;
+            for(int i = 1; i < queue.size(); i++) {
+                if(distance[queue.get(i)] > distance[queue.get(maxIndex)]) {
+                    maxIndex = i;
                 }
             }
-            current = k;
+            int current = queue.remove(maxIndex);
+            if(current == to) {
+                break;
+            }
+            
+            if(visited[current]) {
+                continue;
+            }
+            
             visited[current] = true;
+            
+            Vertex vertex = matrix[current];
+            while(vertex != null) {
+                int neighbor = vertex.getId();
+                if(!visited[neighbor]) {
+                    double newWay = distance[current] + (1.0 / vertex.getWeight());
+                    if(newWay > distance[neighbor]) {
+                        distance[neighbor] = newWay;
+                        previousVertex[neighbor] = current;
+                        if(!queue.contains(neighbor)) {
+                            queue.add(neighbor);
+                        }
+                    }
+                }
+                vertex = vertex.getNext();
+            }
+        }
+
+        if(distance[to] == NEG_INFINITY) {
+            return NEG_INFINITY;
         }
         path.clear();
         int node = to;
-        while (node != - 1) {
+        while (node != -1) {
             path.addFirst(node);
             node = previousVertex[node];
         }
 
-        return distance[k];
+        return distance[to];
     }
 
     public void printAdjacency() {
@@ -173,6 +192,9 @@ public class Graph {
                     ids.add(v.getId());
                 }
                 v = v.getNext();
+            }
+            if (ids.isEmpty()) {
+                break;
             }
             visited.add(ids.removeFirst());
             current = visited.getLast();
