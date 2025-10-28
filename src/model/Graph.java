@@ -362,6 +362,10 @@ public class Graph {
         }
     }
 
+    public boolean isConected() {
+       return this.numberOfComponents() == 1;
+    }
+
     public int getMax() {
         return max;
     }
