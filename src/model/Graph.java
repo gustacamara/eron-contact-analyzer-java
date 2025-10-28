@@ -273,18 +273,17 @@ public class Graph {
     }
 
     public boolean isCyclical() {
-      boolean[] visited = new boolean[max];
-      boolean[] recStack = new boolean[max];
+        boolean[] visited = new boolean[max];
+        boolean[] recStack = new boolean[max];
 
-        for (int i = 0; i < max; i++) {
-            if(!visited[i]){
-                if(hasCycleDFS(i, visited, recStack)){
-                    System.out.println(i);
-                    return true;
+            for (int i = 0; i < max; i++) {
+                if(!visited[i]){
+                    if(hasCycleDFS(i, visited, recStack)){
+                        return true;
+                    }
                 }
             }
-        }
-        return false;
+            return false;
     }
 
     public boolean hasCycleDFS(int vertexId, boolean[] visited, boolean[] recstack) {
@@ -302,6 +301,65 @@ public class Graph {
 
         recstack[vertexId] = false;
         return false;
+    }
+
+    public int numberOfComponents(){
+
+        int i = 0;
+        ArrayList<Integer> S = new ArrayList<>();
+
+        while (S.size() < max){
+            int initial = -1;
+            for(int j = 0; j < max; j++) {
+                if(!S.contains(j)){
+                    initial = j;
+                    break;
+                }
+            }
+            boolean[] visited = new boolean[max];
+            ArrayList<Integer> visitedId = new ArrayList<>();
+            dfsRecursiveAll(initial, visited, visitedId);
+            i++;
+            for (Integer content: visitedId){
+                if(!S.contains(content)){
+                    S.add(content);
+                }
+            }
+
+            System.out.print("Componente " + i + " = {");
+            for(Integer component: visitedId) {
+                System.out.print( " " + component);
+            }
+            System.out.println(" }");
+        }
+        return i;
+    }
+
+    private void dfsRecursiveAll(int current, boolean[] visited, ArrayList<Integer> path) {
+        visited[current] = true;
+        path.add(current);
+
+        Vertex v = matrix[current];
+        while (v != null) {
+            int neighborId = v.getId();
+            if (!visited[neighborId]) {
+                dfsRecursiveAll(neighborId, visited, path);
+            }
+            v = v.getNext();
+        }
+        
+        for (int i = 0; i < max; i++) {
+            if (!visited[i]) {
+                v = matrix[i];
+                while (v != null) {
+                    if (v.getId() == current) {
+                        dfsRecursiveAll(i, visited, path);
+                        break;
+                    }
+                    v = v.getNext();
+                }
+            }
+        }
     }
 
     public int getMax() {
