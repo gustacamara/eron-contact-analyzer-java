@@ -272,6 +272,38 @@ public class Graph {
         return currentLevel;
     }
 
+    public boolean isCyclical() {
+      boolean[] visited = new boolean[max];
+      boolean[] recStack = new boolean[max];
+
+        for (int i = 0; i < max; i++) {
+            if(!visited[i]){
+                if(hasCycleDFS(i, visited, recStack)){
+                    System.out.println(i);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean hasCycleDFS(int vertexId, boolean[] visited, boolean[] recstack) {
+        visited[vertexId] = true;
+        recstack[vertexId] = true;
+
+        Vertex v = matrix[vertexId];
+        while(v != null) {
+            int neighborId = v.getId();
+            if(!visited[neighborId]){
+                if(hasCycleDFS(neighborId, visited, recstack))return true;
+            } else if (recstack[neighborId])return true;
+            v = v.getNext();
+        }
+
+        recstack[vertexId] = false;
+        return false;
+    }
+
     public int getMax() {
         return max;
     }
