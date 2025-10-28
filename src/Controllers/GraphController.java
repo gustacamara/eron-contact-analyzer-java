@@ -2,10 +2,11 @@ package Controllers;
 
 import model.Graph;
 
-import java.util.ArrayList;
+import java.sql.SQLOutput;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.ArrayList;
 
 public class GraphController {
     public void runGraph(Graph g) {
@@ -34,6 +35,10 @@ public class GraphController {
         ArrayList<Integer> path = new ArrayList<>();
         System.out.println("Custo Dijkstra: " + g.dijkstra(topSender, topReceaver, path));
         System.out.println("Caminho Dijkstra: " + path);
+
+        System.out.println("Grafo ciclino: " + g.isCyclical());
+        System.out.println("Numero de componentes: " + g.numberOfComponents());
+        System.out.println("Grafo conexo: " + g.isConected());
     }
 
     public Graph setAdjByHash(Map<String, Map<String, Integer>> map){
